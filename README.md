@@ -36,6 +36,18 @@ cd path\to\healthcare_hr_job_search
 
 The application binds to `127.0.0.1` and is intended for local use. The admin page has no authentication. Do not expose this server to a network or the public internet without adding access controls and reviewing the security configuration.
 
+## Uninstall
+
+There is currently no automatic uninstaller. To remove the application:
+
+1. Close the application.
+2. If you want to keep saved offers, application statuses, and notes, make a copy of `data/apjobs.db` before deleting the project folder.
+3. Delete the **AP Job Aggregator** shortcut from your Desktop.
+4. Delete the project folder. This removes the application, its `.venv`, local `.env`, database, logs, and browser profiles stored inside the project.
+5. If you created a scheduled scraping task using `DEPLOYMENT.md`, remove that task separately in Windows Task Scheduler.
+
+The installer does not remove Python, Google Chrome, or the shared ChromeDriver cache, because other applications may use them.
+
 ## Configuration
 
 The installer creates `.env` from `.env.example`. Available settings:
