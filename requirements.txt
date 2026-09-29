@@ -1,0 +1,11 @@
+﻿fastapi
+uvicorn
+sqlalchemy
+selenium
+requests
+pydantic-settings
+python-dotenv
+APScheduler
+webdriver-manager
+jinja2
+beautifulsoup4

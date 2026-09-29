@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Admina - AP Job Aggregator{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Panel Administracyjny</h1>
+        <div class="flex flex-wrap gap-2">
+            <button id="scrapeBtn" onclick="triggerScrape()" class="px-6 py-2 bg-green-600 text-white rounded-full font-semibold hover:bg-green-700 shadow-md transition-all">
+                Szukaj Nowych Ofert
+            </button>
+            <button id="shutdownBtn" onclick="shutdownApp()" class="px-6 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 shadow-md transition-all">
+                Zatrzymaj aplikację
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="scrapeStatusPanel" class="hidden mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+            <span class="h-3 w-3 animate-pulse rounded-full bg-blue-600"></span>
+            <div>
+                <p id="scrapeStatusTitle" class="font-semibold">Szukanie nowych ofert</p>
+                <p id="scrapeStatusDetail" class="mt-1 text-blue-700">Przygotowanie...</p>
+            </div>
+        </div>
+        <div id="scrapeStatusCount" class="text-xs font-medium uppercase tracking-wider text-blue-700"></div>
+    </div>
+    <div class="mt-3 h-2 overflow-hidden rounded-full bg-blue-100">
+        <div id="scrapeStatusProgress" class="h-full w-0 rounded-full bg-blue-600 transition-all duration-500"></div>
+    </div>
+    <div class="mt-2 flex justify-between text-xs text-blue-700">
+        <span id="scrapeStatusElapsed">Czas: 00:00</span>
+        <span id="scrapeStatusPulse">Praca w tle...</span>
+    </div>
+</div>
+
+<!-- Admin Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="adminStats">
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold text-gray-700">Wszystkie Oferty</h2>
+        <p class="text-3xl font-bold text-blue-600" id="totalOffers">0</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold text-gray-700">Aktywne Strony</h2>
+        <p class="text-3xl font-bold text-green-600" id="activeWebsites">0</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold text-gray-700">Aktywne Miasta</h2>
+        <p class="text-3xl font-bold text-purple-600" id="activeCities">0</p>
+    </div>
+</div>
+
+<!-- Website Management -->
+<div class="bg-white p-6 rounded-lg shadow mb-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Zarządzanie Stronami Internetowymi</h2>
+    
+    <form id="websiteForm" class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="hidden" id="websiteId">
+        <div>
+            <label for="websiteUrl" class="block text-sm font-medium text-gray-700">URL</label>
+            <input type="url" id="websiteUrl" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+        </div>
+        <div>
+            <label for="websiteCompany" class="block text-sm font-medium text-gray-700">Nazwa Firmy</label>
+            <input type="text" id="websiteCompany" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+        </div>
+        <div>
+            <label for="websiteCategory" class="block text-sm font-medium text-gray-700">Kategoria</label>
+            <select id="websiteCategory" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="aggregator">Agregator</option>
+                <option value="company_nationwide">Firma Ogólnopolska</option>
+                <option value="company_local">Firma Lokalna</option>
+            </select>
+        </div>
+        <div>
+            <label for="websiteKeywords" class="block text-sm font-medium text-gray-700">Słowa Kluczowe (oddzielone przecinkami)</label>
+            <input type="text" id="websiteKeywords" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        </div>
+        <div>
+            <label for="websiteLocation" class="block text-sm font-medium text-gray-700">Domyślna Lokalizacja</label>
+            <input type="text" id="websiteLocation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        </div>
+        <div>
+            <label for="websiteCustomConfig" class="block text-sm font-medium text-gray-700">Niestandardowa Konfiguracja (JSON)</label>
+            <textarea id="websiteCustomConfig" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-xs"></textarea>
+        </div>
+        <div class="flex items-center md:col-span-2">
+            <input type="checkbox" id="websiteActive" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label for="websiteActive" class="ml-2 block text-sm text-gray-900">Aktywna</label>
+        </div>
+        <div class="md:col-span-2 flex justify-end space-x-2">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Zapisz Stronę</button>
+            <button type="button" id="cancelWebsiteEdit" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Anuluj</button>
+        </div>
+    </form>
+
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-md p-3">
+        <div class="flex items-center gap-3">
+            <label for="selectAllWebsites" class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" id="selectAllWebsites" class="h-4 w-4 rounded text-blue-600 focus:ring-blue-500">
+                <span>Zaznacz wszystkie</span>
+            </label>
+            <span id="selectedWebsitesCount" class="text-sm text-gray-600">Zaznaczono: 0</span>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" onclick="bulkSetWebsitesActive(true)" class="px-3 py-1.5 bg-green-600 text-white rounded-md text-sm hover:bg-green-700">Aktywuj</button>
+            <button type="button" onclick="bulkSetWebsitesActive(false)" class="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-700">Dezaktywuj</button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Wybierz</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Firma</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategoria</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktywna</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+                </tr>
+            </thead>
+            <tbody id="websitesTableBody" class="bg-white divide-y divide-gray-200">
+                <!-- Websites will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- City Management -->
+<div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Zarządzanie Miastami</h2>
+    
+    <form id="cityForm" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="hidden" id="cityId">
+        <div>
+            <label for="cityName" class="block text-sm font-medium text-gray-700">Nazwa Miasta</label>
+            <input type="text" id="cityName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+        </div>
+        <div>
+            <label for="cityLat" class="block text-sm font-medium text-gray-700">Szerokość Geograficzna (Lat)</label>
+            <input type="number" step="any" id="cityLat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+        </div>
+        <div>
+            <label for="cityLon" class="block text-sm font-medium text-gray-700">Długość Geograficzna (Lon)</label>
+            <input type="number" step="any" id="cityLon" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+        </div>
+        <div class="flex items-center md:col-span-3">
+            <input type="checkbox" id="cityActive" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label for="cityActive" class="ml-2 block text-sm text-gray-900">Aktywne</label>
+        </div>
+        <div class="md:col-span-3 flex justify-end space-x-2">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Zapisz Miasto</button>
+            <button type="button" id="cancelCityEdit" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Anuluj</button>
+        </div>
+    </form>
+
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-md p-3">
+        <div class="flex items-center gap-3">
+            <label for="selectAllCities" class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" id="selectAllCities" class="h-4 w-4 rounded text-blue-600 focus:ring-blue-500">
+                <span>Zaznacz wszystkie</span>
+            </label>
+            <span id="selectedCitiesCount" class="text-sm text-gray-600">Zaznaczono: 0</span>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" onclick="bulkSetCitiesActive(true)" class="px-3 py-1.5 bg-green-600 text-white rounded-md text-sm hover:bg-green-700">Aktywuj</button>
+            <button type="button" onclick="bulkSetCitiesActive(false)" class="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-700">Dezaktywuj</button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Wybierz</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Miasto</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lat</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lon</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktywne</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+                </tr>
+            </thead>
+            <tbody id="citiesTableBody" class="bg-white divide-y divide-gray-200">
+                <!-- Cities will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/admin.js?v=shutdown-3"></script>
+{% endblock %}

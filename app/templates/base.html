@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AP Job Aggregator{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="/" class="text-xl font-bold">AP Job Aggregator</a>
+                <div class="hidden md:flex space-x-4">
+                    <a href="/" class="hover:text-blue-200">Oferty</a>
+                    <a href="/matching" class="hover:text-blue-200">Dopasowanie</a>
+                    <a href="/admin" class="hover:text-blue-200">Panel Admina</a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="triggerScrape()" id="navScrapeBtn" data-scrape-button="true" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-sm font-semibold transition">
+                    Szukaj Nowych Ofert
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t mt-auto py-4">
+        <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; 2026 AP Job Aggregator - Healthcare HR Solution
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js?v=20260525-scrape-status-2"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

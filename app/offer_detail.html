@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Szczegóły Oferty - AP Job Aggregator{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800" id="offerDetailTitle">Ładowanie oferty...</h1>
+    <a href="/" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">Powrót do listy</a>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <p class="text-sm text-gray-500">Firma:</p>
+            <p class="text-lg font-medium text-gray-900" id="offerDetailCompany">N/A</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Lokalizacja:</p>
+            <p class="text-lg font-medium text-gray-900" id="offerDetailLocation">N/A</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Dopasowanie:</p>
+            <p class="text-lg font-medium text-gray-900">
+                <span id="offerDetailScore" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"></span>
+            </p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Data dodania:</p>
+            <p class="text-lg font-medium text-gray-900" id="offerDetailCreatedAt">N/A</p>
+        </div>
+        <div class="md:col-span-2">
+            <p class="text-sm text-gray-500">Link do oferty:</p>
+            <a id="offerDetailUrl" href="#" target="_blank" class="text-blue-600 hover:underline text-lg font-medium">Otwórz ofertę</a>
+        </div>
+    </div>
+
+    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Informacje z ogloszenia</h2>
+        <p id="offerDetailInfo" class="text-sm text-gray-700 whitespace-pre-line">Brak dodatkowych informacji z ogloszenia.</p>
+    </div>
+
+    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Dopasowanie</h2>
+        <div id="matchDetailsContainer">
+            <div id="matchPositive" class="mb-4"></div>
+            <div id="matchNegative" class="mb-4"></div>
+        </div>
+    </div>
+
+    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Rozmowa o pracę</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="interviewDate" class="block text-sm font-medium text-gray-700">Data</label>
+                <input id="interviewDate" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="interviewTime" class="block text-sm font-medium text-gray-700">Godzina</label>
+                <input id="interviewTime" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="interviewLocation" class="block text-sm font-medium text-gray-700">Lokalizacja</label>
+                <input id="interviewLocation" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Miejsce rozmowy">
+            </div>
+        </div>
+        <div class="mt-4">
+            <label for="interviewNotes" class="block text-sm font-medium text-gray-700">Dodatkowe notatki rozmowy</label>
+            <textarea id="interviewNotes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+        </div>
+    </div>
+
+    <hr class="my-6">
+
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Zarządzanie Statusem</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label for="offerStatusSelect" class="block text-sm font-medium text-gray-700">Status Aplikacji</label>
+            <select id="offerStatusSelect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="new">Nowa</option>
+                <option value="cv_sent">Wysłano CV</option>
+                <option value="replied">Odpowiedź pracodawcy</option>
+                <option value="interview">Rozmowa</option>
+                <option value="archived">Archiwum</option>
+            </select>
+        </div>
+        <div class="md:col-span-2">
+            <label for="offerNotes" class="block text-sm font-medium text-gray-700">Notatki</label>
+            <textarea id="offerNotes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+        </div>
+        <div class="md:col-span-2 flex justify-end">
+            <button id="saveOfferStatusBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Zapisz Status i Notatki</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const offerId = window.location.pathname.split('/').pop();
+        if (offerId) {
+            loadOfferDetails(offerId);
+        }
+
+        document.getElementById('saveOfferStatusBtn').addEventListener('click', () => {
+            saveOfferStatus(offerId);
+        });
+    });
+
+    async function loadOfferDetails(id) {
+        const response = await fetch(`/api/offers/${id}`);
+        if (!response.ok) {
+            document.getElementById('offerDetailTitle').innerText = 'Oferta nie znaleziona';
+            return;
+        }
+        const offer = await response.json();
+        
+        document.getElementById('offerDetailTitle').innerText = offer.title;
+        document.getElementById('offerDetailCompany').innerText = offer.company_name || 'N/A';
+        document.getElementById('offerDetailLocation').innerText = offer.location || 'N/A';
+        
+        const scoreSpan = document.getElementById('offerDetailScore');
+        scoreSpan.innerText = `${offer.score}%`;
+        scoreSpan.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getScoreClass(offer.score)}`;
+
+        document.getElementById('offerDetailCreatedAt').innerText = new Date(offer.created_at).toLocaleDateString();
+        
+        const urlLink = document.getElementById('offerDetailUrl');
+        urlLink.href = offer.url;
+        urlLink.innerText = offer.url;
+        document.getElementById('offerDetailInfo').innerText = offer.offer_info || 'Brak dodatkowych informacji z ogloszenia.';
+
+        renderMatchDetails(offer.match_details || {});
+
+        const interviewData = parseInterviewNotes(offer.status?.notes || '');
+        document.getElementById('interviewDate').value = interviewData.date || '';
+        document.getElementById('interviewTime').value = interviewData.time || '';
+        document.getElementById('interviewLocation').value = interviewData.location || '';
+        document.getElementById('interviewNotes').value = interviewData.notes || '';
+
+        const statusSelect = document.getElementById('offerStatusSelect');
+        const notesTextarea = document.getElementById('offerNotes');
+        if (offer.status) {
+            statusSelect.value = offer.status.status;
+            notesTextarea.value = offer.status.status === 'interview' ? '' : (offer.status.notes || '');
+        }
+    }
+
+    function renderMatchDetails(matchDetails) {
+        const positiveContainer = document.getElementById('matchPositive');
+        const negativeContainer = document.getElementById('matchNegative');
+        positiveContainer.innerHTML = '';
+        negativeContainer.innerHTML = '';
+
+        if (matchDetails.positive_matches && matchDetails.positive_matches.length > 0) {
+            positiveContainer.innerHTML = `
+                <p class="text-sm font-medium text-green-700">Dlaczego ta oferta pasuje:</p>
+                <ul class="list-disc list-inside text-sm text-gray-700">
+                    ${matchDetails.positive_matches.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        if (matchDetails.negative_reasons && matchDetails.negative_reasons.length > 0) {
+            negativeContainer.innerHTML = `
+                <p class="text-sm font-medium text-red-700">Dlaczego może być mniej dopasowana:</p>
+                <ul class="list-disc list-inside text-sm text-gray-700">
+                    ${matchDetails.negative_reasons.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            `;
+        }
+    }
+
+    function parseInterviewNotes(notes) {
+        const data = { date: '', time: '', location: '', notes: '' };
+        if (!notes) return data;
+
+        const lines = notes.split('\n').map(line => line.trim());
+        const remaining = [];
+        lines.forEach(line => {
+            if (line.startsWith('Rozmowa data:')) {
+                data.date = line.replace('Rozmowa data:', '').trim();
+            } else if (line.startsWith('Rozmowa godzina:')) {
+                data.time = line.replace('Rozmowa godzina:', '').trim();
+            } else if (line.startsWith('Rozmowa lokalizacja:')) {
+                data.location = line.replace('Rozmowa lokalizacja:', '').trim();
+            } else if (line.startsWith('Notatki rozmowy:')) {
+                remaining.push(line.replace('Notatki rozmowy:', '').trim());
+            } else {
+                remaining.push(line);
+            }
+        });
+        data.notes = remaining.join('\n').trim();
+        return data;
+    }
+
+    function buildInterviewNotes() {
+        const date = document.getElementById('interviewDate').value;
+        const time = document.getElementById('interviewTime').value;
+        const location = document.getElementById('interviewLocation').value;
+        const notes = document.getElementById('interviewNotes').value.trim();
+
+        const lines = [];
+        if (date) lines.push(`Rozmowa data: ${date}`);
+        if (time) lines.push(`Rozmowa godzina: ${time}`);
+        if (location) lines.push(`Rozmowa lokalizacja: ${location}`);
+        if (notes) lines.push(`Notatki rozmowy: ${notes}`);
+
+        return lines.join('\n');
+    }
+
+    async function saveOfferStatus(id) {
+        const status = document.getElementById('offerStatusSelect').value;
+        const generalNotes = document.getElementById('offerNotes').value.trim();
+        const interviewNotes = buildInterviewNotes();
+        const notes = [generalNotes, interviewNotes].filter(Boolean).join('\n\n');
+
+        const response = await fetch(`/api/offers/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status, notes })
+        });
+
+        if (response.ok) {
+            alert('Status i notatki zaktualizowane pomyślnie!');
+        } else {
+            const errorData = await response.json();
+            alert(`Błąd aktualizacji: ${errorData.detail}`);
+        }
+    }
+
+    // Re-use getScoreClass from app.js
+    function getScoreClass(score) {
+        if (score >= 70) return 'bg-green-100 text-green-800';
+        if (score >= 50) return 'bg-yellow-100 text-yellow-800';
+        return 'bg-gray-100 text-gray-800';
+    }
+</script>
+{% endblock %}

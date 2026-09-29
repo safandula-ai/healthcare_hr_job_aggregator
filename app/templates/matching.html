@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Jak liczymy dopasowanie - AP Job Aggregator{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Jak liczymy dopasowanie</h1>
+    <p class="mt-2 text-sm text-gray-600">Wynik pokazuje, jak blisko oferta jest docelowego profilu wyszukiwania: rejestracja medyczna, obsługa pacjenta, koordynacja i administracja ochrony zdrowia.</p>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow space-y-6">
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Najmocniejsze sygnały</h2>
+        <p class="mt-2 text-sm text-gray-700">Najwięcej punktów dają stanowiska blisko rejestracji i obsługi pacjenta: rejestratorka medyczna, rejestrator medyczny, koordynator rejestracji, asystentka medyczna, recepcja medyczna oraz obsługa pacjenta.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Kontekst medyczny</h2>
+        <p class="mt-2 text-sm text-gray-700">Dodatkowe punkty dodają słowa związane z pacjentami, placówkami medycznymi, szpitalem, kliniką, laboratorium, diagnostyką, EDM, e-receptą i e-skierowaniem. Sam kontekst medyczny nie wystarcza, jeśli rola jest sprzedażowa, techniczna albo porządkowa.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Administracja i koordynacja</h2>
+        <p class="mt-2 text-sm text-gray-700">Oferta zyskuje punkty za administrację, dokumentację, harmonogramy, grafiki, raportowanie, korespondencję, archiwizację, rozliczenia, kadry, onboarding, Comarch i Paximed.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Polskie odmiany słów</h2>
+        <p class="mt-2 text-sm text-gray-700">Dopasowanie używa rodzin słów, więc formy takie jak rejestratorka, rejestrator, rejestracji i rejestracja są traktowane jako ten sam kierunek roli. Podobnie działa to dla medyczny/medyczna/medycznej, pacjent/pacjenta/pacjentów oraz administracja/administracji.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Bonusy za dobre połączenia</h2>
+        <p class="mt-2 text-sm text-gray-700">Jeśli oferta łączy rolę rejestracyjną z medycyną albo administrację z laboratorium, wynik rośnie mocniej niż za pojedyncze słowa. Dlatego tytuł typu "Specjalista ds. Administracji Laboratorium / Rejestrator Medyczny" ma wysoki wynik.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Wykluczenia</h2>
+        <p class="mt-2 text-sm text-gray-700">Na zero spadają oferty, które brzmią jak hotel, sprzedaż, sklep medyczny, przedstawiciel handlowy, doradca sprzedaży, sprzątanie, serwis porządkowy, operator urządzeń albo stanowisko techniczne. To usuwa przypadki, gdzie słowo "medyczny" pojawia się tylko w branży, ale praca nie jest administracją medyczną.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Role kierownicze</h2>
+        <p class="mt-2 text-sm text-gray-700">Kierownik, manager, menedżer, dyrektor oraz podobne role dostają dużą karę punktową. Mogą zostać widoczne tylko wtedy, gdy reszta oferty jest wyjątkowo blisko profilu, ale nie powinny wyglądać jak najlepsze dopasowanie.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Lokalizacja</h2>
+        <p class="mt-2 text-sm text-gray-700">Oferty bliżej centrum wyszukiwania dostają bonus. Im dalej od wybranego centrum, tym mniejszy bonus albo kara. W Krakowie preferowana jest południowo-wschodnia część miasta, a północno-zachodnie dzielnice dostają niższy wynik.</p>
+    </section>
+
+    <section>
+        <h2 class="text-lg font-semibold text-gray-800">Co obniża wynik</h2>
+        <p class="mt-2 text-sm text-gray-700">Punkty są odejmowane za role wyraźnie inne od profilu, na przykład lekarz, pielęgniarka, farmaceuta, programista, sprzedawca, kierowca, magazynier, doradca handlowy albo stanowisko beauty.</p>
+    </section>
+</div>
+{% endblock %}
