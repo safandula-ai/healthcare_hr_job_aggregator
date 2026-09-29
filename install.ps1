@@ -151,7 +151,12 @@ if (Test-Path $IconPath) {
 }
 $Shortcut.Save()
 
-Start-InstalledApp | Out-Null
+$appStarted = Start-InstalledApp
+if (-not $appStarted) {
+    Write-Host "`nDependencies were installed and the desktop shortcut was created, but the application did not start." -ForegroundColor Red
+    Write-Host "Check $PSScriptRoot\logs\app.log for the startup error, then try the desktop shortcut again." -ForegroundColor Yellow
+    exit 1
+}
 
 Write-Host "`nInstallation Successful!" -ForegroundColor Green
-Write-Host "You can now start the application using the shortcut on your Desktop." -ForegroundColor White
+Write-Host "The application is running. You can start it later using the desktop shortcut." -ForegroundColor White

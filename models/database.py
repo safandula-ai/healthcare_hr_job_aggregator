@@ -1,10 +1,12 @@
 """SQLAlchemy models, SQLite setup, migration, and initial data."""
 
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Text, inspect, text
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 import json
+from pathlib import Path
 from config.settings import settings
 
 Base = declarative_base()
@@ -77,8 +79,14 @@ class OfferStatus(Base):
         """Return a compact diagnostic representation of the application status."""
         return f"<OfferStatus(offer_id={self.offer_id}, status='{self.status}')>"
 
-# Database Engine
-engine = create_engine(f"sqlite:///{settings.DB_PATH}")
+# Resolve relative paths against the project and create the parent directory
+# before SQLite attempts to open or create its database file.
+db_path = Path(settings.DB_PATH).expanduser()
+if not db_path.is_absolute():
+    db_path = Path(settings.BASE_DIR) / db_path
+db_path.parent.mkdir(parents=True, exist_ok=True)
+
+engine = create_engine(URL.create("sqlite", database=str(db_path)))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
