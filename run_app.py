@@ -30,7 +30,7 @@ def open_browser_when_ready():
 if __name__ == "__main__":
     os.chdir(BASE_DIR)
     configure_app_logging()
-    logging.info("Starting AP Job Aggregator from %s", BASE_DIR)
+    logging.info("Starting Healthcare HR Job Aggregator from %s", BASE_DIR)
 
     Thread(target=open_browser_when_ready, daemon=True).start()
 
@@ -43,5 +43,5 @@ if __name__ == "__main__":
             log_config=None,
         )
     except Exception:
-        logging.exception("AP Job Aggregator failed to start")
+        logging.exception("Healthcare HR Job Aggregator failed to start")
         raise

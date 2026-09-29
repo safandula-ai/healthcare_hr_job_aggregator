@@ -10,7 +10,7 @@ from config.settings import settings
 from utils.logging_config import configure_app_logging
 import os
 
-app = FastAPI(title="AP Job Aggregator", version="2.0.0")
+app = FastAPI(title="Healthcare HR Job Aggregator", version="2.0.0")
 configure_app_logging()
 
 # Enable CORS for local development

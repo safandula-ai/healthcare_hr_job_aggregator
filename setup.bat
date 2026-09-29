@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo AP Job Aggregator installer for Windows 11
+echo Healthcare HR Job Aggregator installer for Windows 11
 echo.
 echo This file can be started by double-clicking it.
 echo.

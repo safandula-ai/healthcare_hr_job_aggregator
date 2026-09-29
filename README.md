@@ -1,4 +1,4 @@
-# AP Job Aggregator
+# Healthcare HR Job Aggregator
 
 A Windows desktop application that collects healthcare job listings from selected job boards and employer career pages. It provides a local dashboard for reviewing offers, matching them against a configurable location and a healthcare administration profile, and tracking application status.
 
@@ -24,7 +24,7 @@ A Windows desktop application that collects healthcare job listings from selecte
 
 1. Install Python from [python.org](https://www.python.org/downloads/) and enable **Add Python to PATH**.
 2. Download or clone this repository.
-3. Double-click `Install AP Job Aggregator.bat`. The installer creates `.venv`, installs requirements, copies `.env.example` to `.env` if needed, and creates a desktop shortcut.
+3. Double-click `Install Healthcare HR Job Aggregator.bat`. The installer creates `.venv`, installs requirements, copies `.env.example` to `.env` if needed, and creates a desktop shortcut.
 4. Open the dashboard at <http://127.0.0.1:8000>.
 
 To start it manually after installation:
@@ -42,7 +42,7 @@ There is currently no automatic uninstaller. To remove the application:
 
 1. Close the application.
 2. If you want to keep saved offers, application statuses, and notes, make a copy of `data/apjobs.db` before deleting the project folder.
-3. Delete the **AP Job Aggregator** shortcut from your Desktop.
+3. Delete the **Healthcare HR Job Aggregator** shortcut from your Desktop.
 4. Delete the project folder. This removes the application, its `.venv`, local `.env`, database, logs, and browser profiles stored inside the project.
 5. If you created a scheduled scraping task using `DEPLOYMENT.md`, remove that task separately in Windows Task Scheduler.
 

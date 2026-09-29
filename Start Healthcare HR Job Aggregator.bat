@@ -7,7 +7,7 @@ set "PYTHON_PATH=%~dp0.venv\Scripts\python.exe"
 
 if not exist "%PYTHON_PATH%" (
     echo Python environment not found in .venv\Scripts\python.exe
-    echo Run Install AP Job Aggregator.bat first.
+    echo Run Install Healthcare HR Job Aggregator.bat first.
     pause
     exit /b 1
 )

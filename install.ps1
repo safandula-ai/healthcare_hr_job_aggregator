@@ -1,4 +1,4 @@
-# AP Job Aggregator - Windows 11 Installation Script
+# Healthcare HR Job Aggregator - Windows 11 Installation Script
 
 param(
     [switch]$CleanInstall
@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 $AppUrl = "http://127.0.0.1:8000"
-Write-Host "--- AP Job Aggregator Installation ---" -ForegroundColor Cyan
+Write-Host "--- Healthcare HR Job Aggregator Installation ---" -ForegroundColor Cyan
 if ($CleanInstall) {
     Write-Host "Clean install requested. Existing database will be removed if present." -ForegroundColor Yellow
 }
@@ -28,7 +28,7 @@ function Stop-RunningApp {
         }
 
     foreach ($process in $appProcesses) {
-        Write-Host "Stopping running AP Job Aggregator process (PID $($process.ProcessId))..." -ForegroundColor Yellow
+        Write-Host "Stopping running Healthcare HR Job Aggregator process (PID $($process.ProcessId))..." -ForegroundColor Yellow
         Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
     }
 
@@ -68,7 +68,7 @@ function Start-InstalledApp {
         throw "Cannot start the app because no Python executable was found in .venv\Scripts."
     }
 
-    Write-Host "Starting AP Job Aggregator..." -ForegroundColor Cyan
+    Write-Host "Starting Healthcare HR Job Aggregator..." -ForegroundColor Cyan
     Stop-RunningApp
     Start-Process -FilePath $pythonPath -ArgumentList "`"$PSScriptRoot\run_app.py`"" -WorkingDirectory $PSScriptRoot -WindowStyle Hidden
 
@@ -136,7 +136,7 @@ if (-not (Test-Path ".env")) {
 Write-Host "Creating Desktop shortcut..." -ForegroundColor Cyan
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
 $WshShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("$DesktopPath\AP Job Aggregator.lnk")
+$Shortcut = $WshShell.CreateShortcut("$DesktopPath\Healthcare HR Job Aggregator.lnk")
 $LauncherPath = Join-Path $PSScriptRoot ".venv\Scripts\pythonw.exe"
 if (-not (Test-Path $LauncherPath)) {
     $LauncherPath = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
@@ -144,7 +144,7 @@ if (-not (Test-Path $LauncherPath)) {
 $Shortcut.TargetPath = $LauncherPath
 $Shortcut.Arguments = "`"$PSScriptRoot\run_app.py`""
 $Shortcut.WorkingDirectory = "$PSScriptRoot"
-$Shortcut.Description = "Launch AP Job Aggregator Dashboard"
+$Shortcut.Description = "Launch Healthcare HR Job Aggregator Dashboard"
 $IconPath = Join-Path $PSScriptRoot "app\static\favicon.ico"
 if (Test-Path $IconPath) {
     $Shortcut.IconLocation = "$IconPath,0"

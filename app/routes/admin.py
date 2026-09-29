@@ -132,4 +132,4 @@ def shutdown_app():
     """Stop the local background web application process."""
     logger.info("Shutdown requested from admin page.")
     Timer(0.5, lambda: os._exit(0)).start()
-    return {"message": "AP Job Aggregator is shutting down"}
+    return {"message": "Healthcare HR Job Aggregator is shutting down"}

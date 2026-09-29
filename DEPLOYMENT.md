@@ -4,7 +4,7 @@ The scraper suite can run without starting the web dashboard. Create a Windows T
 
 ## Prerequisites
 
-- Install the application and dependencies using `Install AP Job Aggregator.bat`.
+- Install the application and dependencies using `Install Healthcare HR Job Aggregator.bat`.
 - Run a manual scrape from the admin panel once and confirm that Chrome and the source websites work.
 - Set `SELENIUM_HEADLESS=True` in `.env` for scheduled runs.
 
